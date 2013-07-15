@@ -916,7 +916,6 @@ static int on_freelist(struct kmem_cache *s, struct page *page, void *search)
 #ifndef CONFIG_SLUB_LIGHT_WEIGHT_DEBUG_ON
 				set_freepointer(s, object, NULL);
 #endif
-				break;
 			} else {
 				slab_err(s, page, "Freepointer corrupt");
 #ifndef CONFIG_SLUB_LIGHT_WEIGHT_DEBUG_ON
