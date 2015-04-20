@@ -710,12 +710,14 @@ int __msm_jpeg_open(struct msm_jpeg_device *pgmn_dev)
 	irqreturn_t (*core_irq)(int, void *);
 	mutex_lock(&pgmn_dev->lock);
 	if (pgmn_dev->open_count) {
-		
 		JPEG_PR_ERR("%s:%d] busy\n", __func__, __LINE__);
 		mutex_unlock(&pgmn_dev->lock);
 		return -EBUSY;
 	}
 	pgmn_dev->open_count++;
+
+	if (pgmn_dev->open_count == 1)
+		pgmn_dev->state = MSM_JPEG_INIT;
 
 	msm_jpeg_core_irq_install(msm_jpeg_irq);
 	if (pgmn_dev->core_type == MSM_JPEG_CORE_CODEC)
