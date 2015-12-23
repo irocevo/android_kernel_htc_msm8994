@@ -18,8 +18,9 @@
 #define SENSOR_ISP_MAX 2
 int g_subcam_SOF = 0;
 extern int g_subcam_vfe_intf;
+#ifdef CONFIG_OV2722
 extern int g_subcam_no_ack;
-
+#endif
 #define SRC_TO_INTF(src) \
 	((src < RDI_INTF_0 || src == VFE_AXI_SRC_MAX) ? VFE_PIX_0 : \
 	(VFE_RAW_0 + src - RDI_INTF_0))
@@ -1254,15 +1255,19 @@ static int msm_isp_axi_wait_for_cfg_done(struct vfe_device *vfe_dev,
 		vfe_dev->axi_data.pipeline_update = camif_update;
 	}
 	spin_unlock_irqrestore(&vfe_dev->shared_data_lock, flags);
-	
+
+#ifdef CONFIG_OV2722
 	if(g_subcam_no_ack == 1 && vfe_dev->pdev->id == g_subcam_vfe_intf)
+#else
+	if(vfe_dev->pdev->id == g_subcam_vfe_intf)
+#endif
 	{
 		rc = wait_for_completion_interruptible_timeout(
 			&vfe_dev->stream_config_complete,
 			msecs_to_jiffies(100));
 	}
 	else
-	
+
 	rc = wait_for_completion_timeout(
 		&vfe_dev->stream_config_complete,
 		msecs_to_jiffies(VFE_MAX_CFG_TIMEOUT));
@@ -1284,7 +1289,6 @@ static int msm_isp_init_stream_ping_pong_reg(
 	struct msm_vfe_axi_stream *stream_info)
 {
 	int rc = 0;
-	
 	rc = msm_isp_cfg_ping_pong_address(vfe_dev,
 		stream_info, VFE_PING_FLAG);
 	if (rc < 0) {
@@ -1534,7 +1538,6 @@ static int msm_isp_start_axi_stream(struct vfe_device *vfe_dev,
 			if (vfe_dev->dump_reg)
 				msm_camera_io_dump_2(vfe_dev->vfe_base, 0x900);
 
-			
 			msm_isp_axi_stream_enable_cfg(vfe_dev, stream_info);
 			stream_info->state = ACTIVE;
 			vfe_dev->hw_info->vfe_ops.core_ops.reg_update(vfe_dev,

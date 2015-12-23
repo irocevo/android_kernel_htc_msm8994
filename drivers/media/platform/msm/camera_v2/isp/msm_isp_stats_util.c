@@ -16,7 +16,10 @@
 #include "msm_isp_util.h"
 #include "msm_isp_stats_util.h"
 extern int g_subcam_vfe_intf;
+
+#ifdef CONFIG_OV2722
 extern int g_subcam_no_ack;
+#endif
 
 static int msm_isp_stats_cfg_ping_pong_address(struct vfe_device *vfe_dev,
 	struct msm_vfe_stats_stream *stream_info, uint32_t pingpong_status,
@@ -413,15 +416,18 @@ static int msm_isp_stats_wait_for_cfg_done(struct vfe_device *vfe_dev)
 	int rc;
 	init_completion(&vfe_dev->stats_config_complete);
 	atomic_set(&vfe_dev->stats_data.stats_update, 2);
-	
+
+#ifdef CONFIG_OV2722
 	if(g_subcam_no_ack == 1 && vfe_dev->pdev->id == g_subcam_vfe_intf)
+#else
+	if(vfe_dev->pdev->id == g_subcam_vfe_intf)
+#endif
 	{
 		rc = wait_for_completion_interruptible_timeout(
 		&vfe_dev->stats_config_complete,
 		msecs_to_jiffies(100));
 	}
 	else
-	
 	rc = wait_for_completion_timeout(
 		&vfe_dev->stats_config_complete,
 		msecs_to_jiffies(VFE_MAX_CFG_TIMEOUT));
