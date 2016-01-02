@@ -5236,6 +5236,11 @@ long qseecom_ioctl(struct file *file, unsigned cmd, unsigned long arg)
 		if (ret)
 			pr_err("failed request_cancellation: %d\n", ret);
 		break;
+	case 0xc044970f:
+	case 0xc0509707:
+		/* Blank function until we get real kernel sources */
+		ret = 0;
+		break;
 	}
 	default:
 		pr_err("Invalid IOCTL: 0x%x\n", cmd);
