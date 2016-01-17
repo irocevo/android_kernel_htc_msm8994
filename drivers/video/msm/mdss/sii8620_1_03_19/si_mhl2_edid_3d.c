@@ -3723,6 +3723,8 @@ static uint8_t parse_861_short_descriptors(
 				MHL_TX_EDID_INFO(
 				    "EDID -> Short Desc Colorimetry Block\n");
 				break;
+			default:
+				break;
 			}
 
 			break;
@@ -3747,14 +3749,12 @@ static uint8_t parse_861_short_descriptors(
 					   ("unexpected data_block_length\n"));
 				mhl_edid_3d_data->parse_data.HDMI_sink = true;
 
-				
 				*((struct HDMI_LLC_BA_t *)
 					&mhl_edid_3d_data->parse_data.CEC_A_B) =
 							p_HDMI_vs_payload->B_A;
 				*((struct HDMI_LLC_DC_t *)
 				  &mhl_edid_3d_data->parse_data.CEC_C_D) =
 						  p_HDMI_vs_payload->D_C;
-				
 				if (p_HDMI_vs_payload->byte8.
 						latency_fields_present) {
 					if (p_HDMI_vs_payload->byte8.
@@ -3853,7 +3853,6 @@ static uint8_t parse_861_block(struct edid_3d_data_t *mhl_edid_3d_data,
 		p_block_map = (struct block_map_t *) p_EDID_block_data;
 
 		MHL_TX_EDID_INFO("Edid: Block Map\n");
-		
 		for (i = 0;
 		     i < mhl_edid_3d_data->parse_data.num_EDID_extensions - 1;
 		     ++i) {
@@ -3879,7 +3878,6 @@ static uint8_t parse_861_block(struct edid_3d_data_t *mhl_edid_3d_data,
 			return err_code;
 		}
 
-		
 		err_code =
 		    si_mhl_tx_parse_861_long_descriptors(mhl_edid_3d_data,
 							 p_EDID_block_data);

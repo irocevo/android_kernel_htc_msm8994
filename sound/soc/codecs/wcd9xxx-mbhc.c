@@ -491,7 +491,7 @@ void *wcd9xxx_mbhc_cal_btn_det_mp(
 			    const struct wcd9xxx_mbhc_btn_detect_cfg *btn_det,
 			    const enum wcd9xxx_mbhc_btn_det_mem mem)
 {
-	void *ret = &btn_det->_v_btn_low;
+	void *ret = (void*)&btn_det->_v_btn_low;
 
 	switch (mem) {
 	case MBHC_BTN_DET_GAIN:
@@ -503,7 +503,7 @@ void *wcd9xxx_mbhc_cal_btn_det_mp(
 	case MBHC_BTN_DET_V_BTN_HIGH:
 		ret += sizeof(btn_det->_v_btn_low[0]) * btn_det->num_btn;
 	case MBHC_BTN_DET_V_BTN_LOW:
-		/* do nothing */
+		//do nothing
 		break;
 	default:
 		ret = NULL;

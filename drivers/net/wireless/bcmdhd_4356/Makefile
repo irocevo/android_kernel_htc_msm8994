@@ -48,7 +48,7 @@ endif
 ifneq ($(CONFIG_DHD_USE_SCHED_SCAN),)
 DHDCFLAGS += -DWL_SCHED_SCAN
 endif
-EXTRA_CFLAGS += $(DHDCFLAGS)
+EXTRA_CFLAGS = $(DHDCFLAGS)
 ifeq ($(CONFIG_BCMDHD),m)
 EXTRA_LDFLAGS += --strip-debug
 else
