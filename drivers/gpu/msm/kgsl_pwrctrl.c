@@ -192,14 +192,9 @@ static unsigned int _adjust_pwrlevel(struct kgsl_pwrctrl *pwr, int level,
 					struct kgsl_pwr_constraint *pwrc,
 					int popp)
 {
-	unsigned int therm_pwrlevel, max_pwrlevel, min_pwrlevel;
-
-	if (pwr->thermal_pwrlevel > 0)
-		therm_pwrlevel = pwr->thermal_pwrlevel - 1;
-
-	max_pwrlevel = max_t(unsigned int, therm_pwrlevel,
+	unsigned int max_pwrlevel = max_t(unsigned int, pwr->thermal_pwrlevel,
 		pwr->max_pwrlevel);
-	min_pwrlevel = max_t(unsigned int, therm_pwrlevel,
+	unsigned int min_pwrlevel = max_t(unsigned int, pwr->thermal_pwrlevel,
 		pwr->min_pwrlevel);
 
 	switch (pwrc->type) {
@@ -1870,7 +1865,6 @@ static int _wake(struct kgsl_device *device)
 		if (status) {
 			kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
 			KGSL_DRV_ERR(device, "start failed %d\n", status);
-			dump_stack();
 			break;
 		}
 		/* fall through */
@@ -1966,7 +1960,7 @@ _nap(struct kgsl_device *device)
 {
 	switch (device->state) {
 	case KGSL_STATE_ACTIVE:
-		if (!device->ftbl->isidle(device)) {
+		if (!device->ftbl->is_hw_collapsible(device)) {
 			kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
 			return -EBUSY;
 		}
@@ -1977,7 +1971,7 @@ _nap(struct kgsl_device *device)
 		 * independently of the HW activity. For example
 		 * the simple-on-demand governor will get the latest
 		 * busy_time data even if the gpu isn't active.
-		 */
+		*/
 		kgsl_pwrscale_update_stats(device);
 
 		kgsl_pwrctrl_clk(device, KGSL_PWRFLAGS_OFF, KGSL_STATE_NAP);
@@ -2000,7 +1994,7 @@ _sleep(struct kgsl_device *device)
 {
 	switch (device->state) {
 	case KGSL_STATE_ACTIVE:
-		if (!device->ftbl->isidle(device)) {
+		if (!device->ftbl->is_hw_collapsible(device)) {
 			kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
 			return -EBUSY;
 		}
@@ -2033,7 +2027,7 @@ _slumber(struct kgsl_device *device)
 	int status = 0;
 	switch (device->state) {
 	case KGSL_STATE_ACTIVE:
-		if (!device->ftbl->isidle(device)) {
+		if (!device->ftbl->is_hw_collapsible(device)) {
 			kgsl_pwrctrl_request_state(device, KGSL_STATE_NONE);
 			return -EBUSY;
 		}

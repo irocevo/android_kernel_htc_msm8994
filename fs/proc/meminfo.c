@@ -33,7 +33,6 @@ static inline unsigned long free_cma_pages(void)
 
 void driver_report_meminfo(struct seq_file *m)
 {
-	unsigned long kgsl_alloc = kgsl_get_alloc_size(false);
 	uintptr_t ion_alloc = msm_ion_heap_meminfo(true);
 	uintptr_t ion_inuse = msm_ion_heap_meminfo(false);
 	unsigned long free_cma = free_cma_pages();
@@ -41,11 +40,9 @@ void driver_report_meminfo(struct seq_file *m)
 #define K(x) ((x) << (PAGE_SHIFT - 10))
 
 	seq_printf(m,
-		"KgslAlloc:      %8lu kB\n"
 		"IonTotal:       %8lu kB\n"
 		"IonInUse:       %8lu kB\n"
 		"FreeCma:        %8lu kB\n",
-		(kgsl_alloc >> 10),
 		(ion_alloc >> 10),
 		(ion_inuse >> 10),
 		K(free_cma));
